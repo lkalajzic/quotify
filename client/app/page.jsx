@@ -38,6 +38,12 @@ export default function Home() {
           />
         </div>
       </div>
+
+      <form action="/api/submit-image" method="post" enctype="multipart/form-data">
+        <input type="file" name="images" accept="image/*" multiple />
+        <button type="submit">Upload Images</button>
+      </form>
+
     </main>
   );
 }
