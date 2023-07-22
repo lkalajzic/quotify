@@ -3,6 +3,9 @@ const app = express();
 const port = 8000;
 const cors = require('cors');
 
+const path = require('path');
+
+
 // Allow requests from http://localhost:3000
 app.use(cors({ origin: 'http://localhost:3000' }));
 
@@ -17,17 +20,46 @@ app.get('/', (req, res) => {
 // Array to store user-submitted quotes
 let quotes = [];
 
+// Array to store submitted image paths
+let images = [];
+
+// Custom trim function to remove leading spaces and spaces between the last character and the delimiter
+const customTrim = (str, delimiter) => {
+  let trimmed = str.trim(); // Remove leading and trailing spaces
+  if (delimiter) {
+    const delimiterIndex = trimmed.lastIndexOf(delimiter);
+    if (delimiterIndex !== -1) {
+      const lastNonSpaceIndex = trimmed.length - 1;
+      if (delimiterIndex === lastNonSpaceIndex) {
+        // If the delimiter is at the last non-space character, remove any spaces before it
+        trimmed = trimmed.substring(0, delimiterIndex).trim();
+      } else {
+        // If the delimiter is not at the last non-space character, keep the string as is
+        trimmed = trimmed;
+      }
+    }
+  }
+  return trimmed;
+};
+
 // Route for submitting quotes
-app.post('/api/submit-quote', (req, res) => {
+app.post('/api/submit-quotes', (req, res) => {
   const { quote } = req.body;
+
   if (quote) {
     if (Array.isArray(quote)) {
       // If multiple quotes are submitted as an array
-      quotes.push(...quote);
+      quote.forEach((individualQuote) => {
+        const quotesArray = individualQuote.split(';;;');
+        quotes.push(...quotesArray.map((q) => customTrim(q, ';;;')).filter((q) => q !== '')); // Trim and filter out empty strings
+      });
     } else {
       // If a single quote is submitted
-      quotes.push(quote);
+      const quotesArray = quote.split(';;;');
+      quotes.push(...quotesArray.map((q) => customTrim(q, ';;;')).filter((q) => q !== '')); // Trim and filter out empty strings
     }
+
+    console.log('Submitted Quotes:', quotes);
     res.json({ success: true, message: 'Quotes submitted successfully.' });
   } else {
     res.status(400).json({ success: false, message: 'Invalid input.' });
@@ -47,19 +79,35 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage }); // Set up the multer middleware
 
-// Route for submitting multiple images
+// Route for submitting images
 app.post('/api/submit-images', upload.array('images'), (req, res) => {
-  if (!req.files || req.files.length === 0) {
-    return res.status(400).json({ success: false, message: 'No images uploaded.' });
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: 'No images uploaded.' });
+    }
+
+    // Update the images array with the new image paths
+    images.push(...req.files.map((file) => file.path));
+
+    // Access the array of uploaded files using req.files
+    console.log('Submitted Images:', images);
+
+    res.json({ success: true, message: 'Images submitted successfully.', images: images });
+  } catch (error) {
+    console.error('Error uploading images:', error);
+    res.status(500).json({ success: false, message: 'An error occurred while uploading the images.' });
   }
-
-  // You can access the array of uploaded files using req.files
-  const imagePaths = req.files.map((file) => file.path);
-
-  res.json({ success: true, message: 'Images submitted successfully.', images: imagePaths });
 });
 
 
+// Route for fetching submitted data (quotes and images)
+app.get('/api/submitted-data', (req, res) => {
+  res.json({ success: true, quotes, images });
+});
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Listening on port ${port}`);
 });
