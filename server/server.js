@@ -1,9 +1,12 @@
-const express = require('express');
+import express from 'express';
 const app = express();
 const port = 8000;
-const cors = require('cors');
+import cors from 'cors';
+import path from 'path';
+import multer from 'multer';
+import {fileURLToPath} from 'url';
 
-const path = require('path');
+import { applyQuoteToImage } from './quoteImageProcessor';
 
 
 // Allow requests from http://localhost:3000
@@ -67,7 +70,6 @@ app.post('/api/submit-quotes', (req, res) => {
 });
 
 // Multer configuration for handling file uploads
-const multer = require('multer');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'uploads/'); // The directory where uploaded images will be stored
@@ -106,6 +108,23 @@ app.get('/api/submitted-data', (req, res) => {
 });
 
 
+app.get('/api/get-quotes', async (req, res) => {
+  try {
+    // Loop through each submitted quote
+    for (let i = 0; i < quotes.length; i++) {
+      const quote = quotes[i];
+      const imagePath = images[i % images.length]; // Use modulo to cycle through images
+
+      // Apply the quote to the image
+      await applyQuoteToImage(quote, imagePath);
+    }
+  } catch (error) {
+    console.error('Error applying quotes to images:', error);
+  }
+});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 

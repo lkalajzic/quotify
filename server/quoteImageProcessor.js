@@ -1,9 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const { createCanvas, loadImage } = require('canvas');
+import * as fs from 'fs';
+import * as path from 'path';
+import {fileURLToPath} from 'url';
+import { createCanvas, loadImage } from 'canvas';
 
 // Function to apply a quote to an image using canvas
-const applyQuoteToImage = async (quote, imagePath) => {
+export const applyQuoteToImage = async (quote, imagePath) => {
   try {
     const img = await loadImage(imagePath);
     const canvas = createCanvas(img.width, img.height);
@@ -108,6 +109,8 @@ const applyQuoteToImage = async (quote, imagePath) => {
     };
 
     // Save the image with the quote applied
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
     const outputDir = path.join(__dirname, 'output');
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir);
@@ -120,8 +123,4 @@ const applyQuoteToImage = async (quote, imagePath) => {
   } catch (error) {
     console.error('Error applying quote to image:', error);
   }
-};
-
-module.exports = {
-  applyQuoteToImage,
 };
