@@ -105,6 +105,7 @@ app.get('/api/submitted-data', (req, res) => {
   res.json({ success: true, quotes, images });
 });
 
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
