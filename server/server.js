@@ -107,6 +107,20 @@ app.get('/api/submitted-data', (req, res) => {
   res.json({ success: true, quotes, images });
 });
 
+app.get('/api/get-previews', async (req, res) => {
+  try {
+    const processedImagePath = await applyQuoteToImage(quotes[0], images[0]);
+    if (processedImagePath) {
+      res.json({ success: true, processedImagePath });
+    } else {
+      res.json({ success: false, message: 'An error occurred while processing the image.' });
+    }
+  } catch (error) {
+    console.error('Error applying quote to preview image:', error);
+    res.json({ success: false, message: 'An error occurred while processing the image.' });
+  }
+});
+
 
 app.get('/api/get-quotes', async (req, res) => {
   try {
@@ -126,6 +140,10 @@ app.get('/api/get-quotes', async (req, res) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve the 'output' folder as a static directory
+app.use('/output', express.static(path.join(__dirname, 'output')));
+
 
 
 app.listen(port, () => {

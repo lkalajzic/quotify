@@ -115,11 +115,13 @@ export const applyQuoteToImage = async (quote, imagePath) => {
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir);
     }
-    const outputImagePath = path.join(outputDir, `wallpaper_${Date.now()}.jpg`);
+    const outputImagePath = `output/wallpaper_${Date.now()}.jpg`; // Relative path
     const out = fs.createWriteStream(outputImagePath);
     const stream = canvas.createJPEGStream();
     stream.pipe(out);
     console.log(`Image with quote applied saved at: ${outputImagePath}`);
+
+    return outputImagePath; // Return the relative URL path
   } catch (error) {
     console.error('Error applying quote to image:', error);
   }

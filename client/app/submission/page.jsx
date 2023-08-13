@@ -8,6 +8,7 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState('');
   const [submittedQuotes, setSubmittedQuotes] = useState([]);
   const [submittedImages, setSubmittedImages] = useState([]);
+  const [resultImage, setResultImage] = useState([]);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -90,6 +91,28 @@ export default function Home() {
     }
   };
 
+  const handleQuotePreview = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/get-previews`, {
+        method: 'GET',
+      });
+      const data = await response.json();
+      if (!data.success) {
+        setErrorMessage(data.message);
+      } else {
+        setErrorMessage('');
+        setResultImage(data.processedImagePath);
+        console.log('data', data.processedImagePath);
+        console.log('rez', resultImage);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while processing quotes.');
+    }
+  };
+  
+  
+  
+  
   return (
     <main>
       <form onSubmit={handleQuoteSubmit}>
@@ -132,7 +155,19 @@ export default function Home() {
         )}
       </div>
       
-      <button onClick={handleQuoteProcessing} className='border-2 border-gray-300 rounded-md p-2 m-2 hover:bg-gray-300 hover:text-gray-900 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500' type='button'>Process Quotes</button>
+      <button onClick={handleQuotePreview} className='border-2 border-gray-300 rounded-md p-2 m-2' type='button'>Preview Quote</button>
+
+      <div>
+        {resultImage ? (
+          <Image src={`${backendUrl}/${resultImage}`} width={400} height={400} alt={`Processed Image`} />
+        ) : (
+          <p>N/A</p>
+        )}
+      </div>
+
+
+
+      <button onClick={handleQuoteProcessing} className='border-2 border-gray-300 rounded-md p-2 m-2 ' type='button'>Process Quotes</button>
     </main>
   );
 }
