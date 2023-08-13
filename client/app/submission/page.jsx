@@ -73,6 +73,23 @@ export default function Home() {
     }
   };
 
+  const handleQuoteProcessing = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/get-quotes`, {
+        method: 'GET',
+      });
+      const data = await response.json();
+      if (!data.success) {
+        setErrorMessage(data.message);
+      } else {
+        setErrorMessage('');
+        fetchSubmittedData(); // Fetch updated submitted data
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while processing quotes.');
+    }
+  };
+
   return (
     <main>
       <form onSubmit={handleQuoteSubmit}>
@@ -114,7 +131,8 @@ export default function Home() {
           </div>
         )}
       </div>
-        
+      
+      <button onClick={handleQuoteProcessing} className='border-2 border-gray-300 rounded-md p-2 m-2 hover:bg-gray-300 hover:text-gray-900 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500' type='button'>Process Quotes</button>
     </main>
   );
 }

@@ -6,7 +6,7 @@ import path from 'path';
 import multer from 'multer';
 import {fileURLToPath} from 'url';
 
-import { applyQuoteToImage } from './quoteImageProcessor';
+import { applyQuoteToImage } from './quoteImageProcessor.js';
 
 
 // Allow requests from http://localhost:3000
