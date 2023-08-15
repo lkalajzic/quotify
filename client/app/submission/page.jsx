@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -9,8 +9,13 @@ export default function Home() {
   const [submittedQuotes, setSubmittedQuotes] = useState([]);
   const [submittedImages, setSubmittedImages] = useState([]);
   const [resultImage, setResultImage] = useState([]);
+  const [uploadInterface, setUploadInterface] = useState(true);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  useEffect(() => {
+    fetchSubmittedData();
+  }, []);
 
   const fetchSubmittedData = () => {
     fetch(`${backendUrl}/api/submitted-data`)
@@ -18,14 +23,16 @@ export default function Home() {
       .then((data) => {
         if (data.success) {
           setSubmittedQuotes(data.quotes);
-          setSubmittedImages(data.images.map((imagePath) => `${backendUrl}/${imagePath}`));
+          setSubmittedImages(
+            data.images.map((imagePath) => `${backendUrl}/${imagePath}`),
+          );
         }
       })
       .catch((error) => {
         console.error('Error fetching submitted data:', error);
       });
   };
-  
+
   const handleQuoteSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -54,7 +61,11 @@ export default function Home() {
   const handleImageSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
-    formData.append('images', image);
+
+    // Loop through the array of selected files and append each to the formData
+    for (let i = 0; i < image.length; i++) {
+      formData.append('images', image[i]);
+    }
 
     try {
       const response = await fetch(`${backendUrl}/api/submit-images`, {
@@ -66,7 +77,7 @@ export default function Home() {
         setErrorMessage(data.message);
       } else {
         setErrorMessage('');
-        setImage(null); // Clear the image input field after successful submission
+        setImage([]); // Clear the image array after successful submission
         fetchSubmittedData(); // Fetch updated submitted data
       }
     } catch (error) {
@@ -102,72 +113,82 @@ export default function Home() {
       } else {
         setErrorMessage('');
         setResultImage(data.processedImagePath);
-        console.log('data', data.processedImagePath);
-        console.log('rez', resultImage);
+        setUploadInterface(false);
       }
     } catch (error) {
       setErrorMessage('An error occurred while processing quotes.');
     }
   };
-  
-  
-  
-  
+
   return (
-    <main>
-      <form onSubmit={handleQuoteSubmit}>
-        <textarea
-          name="quote"
-          placeholder="Enter your quote"
-          value={quote}
-          onChange={(e) => setQuote(e.target.value)}
-        />
-        <button type="submit">Submit</button>
-      </form>
+    <div className="flex">
+      {uploadInterface ? (
+        <div className="flex flex-col">
+          <div className="flex">
+            <div className="w-1/2 p-4">
+              <form onSubmit={handleQuoteSubmit}>
+                <textarea
+                  name="quote"
+                  placeholder="Enter your quote"
+                  value={quote}
+                  onChange={(e) => setQuote(e.target.value)}
+                />
+                <button type="submit">Submit Quote</button>
+              </form>
 
-      <form onSubmit={handleImageSubmit} encType="multipart/form-data">
-        <input type="file" name="images" accept="image/*" multiple onChange={(e) => setImage(e.target.files[0])} />
-        <button type="submit">Upload Images</button>
-      </form>
+              <form onSubmit={handleImageSubmit} encType="multipart/form-data">
+                <input
+                  type="file"
+                  name="images"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setImage(e.target.files)}
+                />
+                <button type="submit">Upload Images</button>
+              </form>
+              {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+            </div>
 
-      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+            <div className="w-1/2 p-4">
+              {submittedQuotes.length > 0 && (
+                <div>
+                  <h2>Your submitted quotes:</h2>
+                  <ul className="list-disc ml-6">
+                    {submittedQuotes.map((quote, index) => (
+                      <li className="whitespace-pre-wrap" key={index}>
+                        {quote}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-      <div className="my-12">
-        <h2 className="text-2xl font-semibold text-gray-900">Submitted Quotes</h2>
-        {submittedQuotes.length === 0 ? (
-          <p>No quotes submitted yet.</p>
-        ) : (
-          <ul className="list-disc ml-6">
-            {submittedQuotes.map((quote, index) => (
-              <li className="whitespace-pre-wrap" key={index}>{quote}</li>
-            ))}
-          </ul>
-        )}
-        <h2 className="text-2xl font-semibold text-gray-900">Submitted Images</h2>
-        {submittedImages.length === 0 ? (
-          <p>No images submitted yet.</p>
-        ) : (
-          <div className="grid grid-cols-2 gap-4">
-            {submittedImages.map((imageUrl, index) => (
-              <Image key={index} src={imageUrl} width={400} height={300} alt={`Image ${index}`} />
-            ))}
+              {submittedImages.length > 0 && (
+                <div>
+                  <h2>Submitted Images</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {submittedImages.map((imageUrl, index) => (
+                      <Image
+                        key={index}
+                        src={imageUrl}
+                        width={100}
+                        height={100}
+                        alt={`Image ${index}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
-      
-      <button onClick={handleQuotePreview} className='border-2 border-gray-300 rounded-md p-2 m-2' type='button'>Preview Quote</button>
 
-      <div>
-        {resultImage ? (
-          <Image src={`${backendUrl}/${resultImage}`} width={400} height={400} alt={`Processed Image`} />
-        ) : (
-          <p>N/A</p>
-        )}
-      </div>
-
-
-
-      <button onClick={handleQuoteProcessing} className='border-2 border-gray-300 rounded-md p-2 m-2 ' type='button'>Process Quotes</button>
-    </main>
+          <div className="flex justify-center mt-4">
+            <button onClick={handleQuotePreview}>Continue</button>
+          </div>
+        </div>
+      ) : (
+        <div>Edit quotes</div>
+      )}
+    </div>
   );
 }
