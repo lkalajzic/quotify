@@ -187,7 +187,28 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <div>Edit quotes</div>
+        <div className="flex">
+          <button
+            onClick={handleQuotePreview}
+            className="border-2 border-gray-300 rounded-md p-2 m-2"
+            type="button"
+          >
+            Preview Quote
+          </button>
+
+          <div>
+            {resultImage ? (
+              <Image
+                src={`${backendUrl}/${resultImage}`}
+                width={400}
+                height={400}
+                alt={`Processed Image`}
+              />
+            ) : (
+              <p>N/A</p>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
