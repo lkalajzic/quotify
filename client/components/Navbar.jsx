@@ -1,5 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+  SignedIn,
+  SignedOut,
+  UserButton,
+  RedirectToSignIn,
+} from '@clerk/nextjs';
 
 const Navbar = () => {
   return (
@@ -25,18 +31,19 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="hidden items-center gap-4 sm:flex">
-          <button
-            className="rounded-md px-[18px] py-[10px] text-gray-600  hover:shadow-lg"
-            onClick={{}}
-          >
-            Log in
-          </button>
-          <button
-            className="rounded-md bg-blue-600 px-[18px] py-[10px] text-white  hover:shadow-lg"
-            onClick={{}}
-          >
-            Sign up
-          </button>
+          <SignedOut>
+            <Link href="sign-in">
+              <button className="rounded-md px-[18px] py-[10px] text-gray-600  hover:shadow-lg">
+                Log in
+              </button>
+            </Link>
+            <Link href="sign-up">
+              <button className="rounded-md bg-blue-600 px-[18px] py-[10px] text-white  hover:shadow-lg">
+                Sign up
+              </button>
+            </Link>
+          </SignedOut>
+          <UserButton afterSignOutUrl="/" />
         </div>
       </div>
       <hr className="border-gray-100" />

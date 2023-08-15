@@ -1,3 +1,5 @@
 {
-  "/submission/page": "app/submission/page.js"
+  "/page": "app/page.js",
+  "/submission/page": "app/submission/page.js",
+  "/(auth)/(routes)/sign-in/[[...sign-in]]/page": "app/(auth)/(routes)/sign-in/[[...sign-in]]/page.js"
 }

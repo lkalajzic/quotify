@@ -193,7 +193,7 @@ export default function Home() {
             className="border-2 border-gray-300 rounded-md p-2 m-2"
             type="button"
           >
-            Preview Quote
+            Preview Edits
           </button>
 
           <div>

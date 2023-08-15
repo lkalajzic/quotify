@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -20,12 +21,11 @@ export default function Home() {
             >
               Demo
             </button>
-            <button
-              className="rounded-md bg-blue-600 px-[18px] py-[10px] text-white hover:shadow-lg"
-              onClick={{}}
-            >
-              Try it now!
-            </button>
+            <Link href="/sign-up">
+              <button className="rounded-md bg-blue-600 px-[18px] py-[10px] text-white hover:shadow-lg">
+                Try it now!
+              </button>
+            </Link>
           </div>
         </div>
         <div className="flex-1">
