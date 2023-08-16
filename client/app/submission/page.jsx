@@ -10,6 +10,10 @@ export default function Home() {
   const [submittedImages, setSubmittedImages] = useState([]);
   const [resultImage, setResultImage] = useState([]);
   const [uploadInterface, setUploadInterface] = useState(true);
+  const [fontFamily, setFontFamily] = useState('serif');
+  const [fontSize, setFontSize] = useState(35);
+  const [fontColor, setFontColor] = useState('#232626');
+  const [customizationChanges, setCustomizationChanges] = useState(false);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -104,9 +108,18 @@ export default function Home() {
 
   const handleQuotePreview = async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/get-previews`, {
-        method: 'GET',
+      const queryParams = new URLSearchParams({
+        fontFamily: fontFamily,
+        fontSize: fontSize,
+        fontColor: fontColor,
       });
+
+      const response = await fetch(
+        `${backendUrl}/api/get-previews?${queryParams}`,
+        {
+          method: 'GET',
+        },
+      );
       const data = await response.json();
       if (!data.success) {
         setErrorMessage(data.message);
@@ -120,6 +133,11 @@ export default function Home() {
     }
   };
 
+  const handleCustomizationUpdate = () => {
+    setCustomizationChanges(true);
+    handleQuotePreview(); // Trigger the preview update
+  };
+
   return (
     <div className="flex">
       {uploadInterface ? (
@@ -128,6 +146,7 @@ export default function Home() {
             <div className="w-1/2 p-4">
               <form onSubmit={handleQuoteSubmit}>
                 <textarea
+                  className="w-[800px] h-[400px]"
                   name="quote"
                   placeholder="Enter your quote"
                   value={quote}
@@ -188,13 +207,38 @@ export default function Home() {
         </div>
       ) : (
         <div className="flex">
-          <button
-            onClick={handleQuotePreview}
-            className="border-2 border-gray-300 rounded-md p-2 m-2"
-            type="button"
-          >
-            Preview Edits
-          </button>
+          <button onClick={handleQuotePreview}>Continue</button>
+          <div className="w-1/2 p-4">
+            <h2>Customization</h2>
+            <label htmlFor="fontFamily">Font Family:</label>
+            <select
+              id="fontFamily"
+              value={fontFamily}
+              onChange={(e) => setFontFamily(e.target.value)}
+            >
+              <option value="Arial">Arial</option>
+              <option value="serif">Serif</option>
+              <option value="sans-serif">Sans-serif</option>
+              <option value="monospace">Monospace</option>
+              <option value="cursive">Cursive</option>
+              <option value="fantasy">Fantasy</option>
+            </select>
+            <label htmlFor="fontSize">Font Size:</label>
+            <input
+              type="number"
+              id="fontSize"
+              value={fontSize}
+              onChange={(e) => setFontSize(parseInt(e.target.value))}
+            />
+            <label htmlFor="fontColor">Font Color:</label>
+            <input
+              type="color"
+              id="fontColor"
+              value={fontColor}
+              onChange={(e) => setFontColor(e.target.value)}
+            />
+            <button onClick={handleCustomizationUpdate}>Update Preview</button>
+          </div>
 
           <div>
             {resultImage ? (
@@ -208,6 +252,14 @@ export default function Home() {
               <p>N/A</p>
             )}
           </div>
+
+          <button
+            onClick={handleCustomizationUpdate}
+            className="border-2 border-gray-300 rounded-md p-2 m-2"
+            type="button"
+          >
+            Generate And Download All Images
+          </button>
         </div>
       )}
     </div>

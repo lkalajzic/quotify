@@ -108,12 +108,10 @@ app.post("/api/submit-images", upload.array("images"), (req, res) => {
     });
   } catch (error) {
     console.error("Error uploading images:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while uploading the images.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while uploading the images.",
+    });
   }
 });
 
@@ -122,9 +120,19 @@ app.get("/api/submitted-data", (req, res) => {
   res.json({ success: true, quotes, images });
 });
 
+// Route for fetching previews with customization
 app.get("/api/get-previews", async (req, res) => {
   try {
-    const processedImagePath = await applyQuoteToImage(quotes[0], images[0]);
+    const { fontFamily, fontSize, fontColor } = req.query;
+
+    const processedImagePath = await applyQuoteToImage(
+      quotes[0],
+      images[0],
+      fontFamily,
+      fontSize,
+      fontColor
+    );
+
     if (processedImagePath) {
       res.json({ success: true, processedImagePath });
     } else {

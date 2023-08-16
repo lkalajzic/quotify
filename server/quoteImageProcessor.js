@@ -4,14 +4,22 @@ import { fileURLToPath } from "url";
 import { createCanvas, loadImage } from "canvas";
 
 // Function to apply a quote to an image using canvas
-export const applyQuoteToImage = async (quote, imagePath) => {
+export const applyQuoteToImage = async (
+  quote,
+  imagePath,
+  fontFamily,
+  fontSize,
+  fontColor
+) => {
   try {
     const img = await loadImage(imagePath);
     const canvas = createCanvas(img.width, img.height);
     const ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    let font = 35;
+    // Use fontFamily, fontSize, and fontColor for customization
+    ctx.font = `${fontSize}px ${fontFamily}`;
+
     const maxRectWidth = canvas.width * 0.85;
     const lineHeight = 1.3; // Line height factor
     let newlineCount = 0;
@@ -25,7 +33,6 @@ export const applyQuoteToImage = async (quote, imagePath) => {
     const paragraphs = quote.split("\n"); // Split the quote into paragraphs
 
     // Measure text size
-    ctx.font = `${font}px Arial`;
     const wrappedLines = [];
     const words = quote.split(" ");
     let line = "";
@@ -42,10 +49,10 @@ export const applyQuoteToImage = async (quote, imagePath) => {
     wrappedLines.push(line);
 
     const totalHeight =
-      (wrappedLines.length + newlineCount) * font * lineHeight;
+      (wrappedLines.length + newlineCount) * fontSize * lineHeight;
 
     // Determine rectangle height and position
-    const rectHeight = totalHeight + font * 4;
+    const rectHeight = totalHeight + fontSize * 2;
     const rectX = (canvas.width - maxRectWidth) / 2;
     const rectY = (canvas.height - rectHeight) / 2;
 
@@ -88,7 +95,7 @@ export const applyQuoteToImage = async (quote, imagePath) => {
     ctx.stroke();
 
     // Draw text
-    ctx.fillStyle = "#232626";
+    ctx.fillStyle = fontColor;
     let y = rectY * 1.12;
     for (const paragraph of paragraphs) {
       const lines = paragraph.split("\n"); // Split each paragraph into lines
@@ -107,12 +114,12 @@ export const applyQuoteToImage = async (quote, imagePath) => {
             ctx.fillText(
               line,
               (canvas.width - ctx.measureText(line).width) / 2,
-              y + paragraphHeight + font
+              y + paragraphHeight + fontSize
             );
 
             // Start a new wrapped line
             line = word;
-            paragraphHeight += font * lineHeight;
+            paragraphHeight += fontSize * lineHeight;
           } else {
             line = testLine;
           }
@@ -123,13 +130,13 @@ export const applyQuoteToImage = async (quote, imagePath) => {
           ctx.fillText(
             line,
             (canvas.width - ctx.measureText(line).width) / 2,
-            y + paragraphHeight + font
+            y + paragraphHeight + fontSize
           );
-          paragraphHeight += font * lineHeight;
+          paragraphHeight += fontSize * lineHeight;
         }
       }
 
-      y += paragraphHeight + font * lineHeight * 0.5; // Add extra spacing between paragraphs
+      y += paragraphHeight + fontSize * lineHeight * 0.5; // Add extra spacing between paragraphs
     }
 
     // Save the image with the quote applied
