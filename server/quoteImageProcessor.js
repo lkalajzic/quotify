@@ -20,10 +20,10 @@ export const applyQuoteToImage = async (
     // Use fontFamily, fontSize, and fontColor for customization
     ctx.font = `${fontSize}px ${fontFamily}`;
 
-    const maxRectWidth = canvas.width * 0.85;
+    const maxRectWidth = canvas.width * 0.8;
     const lineHeight = 1.3; // Line height factor
     let newlineCount = 0;
-
+    if (/[\n\n]{2,}/.test(quote)) newlineCount++;
     for (let i = 0; i < quote.length; i++) {
       if (quote[i] === "\n") {
         newlineCount++;
@@ -39,7 +39,7 @@ export const applyQuoteToImage = async (
     for (const word of words) {
       const testLine = `${line} ${word}`;
       const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxRectWidth) {
+      if (metrics.width > maxRectWidth - 50) {
         wrappedLines.push(line);
         line = word;
       } else {
@@ -52,14 +52,14 @@ export const applyQuoteToImage = async (
       (wrappedLines.length + newlineCount) * fontSize * lineHeight;
 
     // Determine rectangle height and position
-    const rectHeight = totalHeight + fontSize * 2;
+    const rectHeight = totalHeight + fontSize * 3;
     const rectX = (canvas.width - maxRectWidth) / 2;
     const rectY = (canvas.height - rectHeight) / 2;
 
     // Draw rounded rectangle with semi-transparent fill
-    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
-    ctx.lineWidth = 10;
+    ctx.fillStyle = "rgba(255, 255, 255, 180)";
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.lineWidth = 2;
     const radius = 30;
 
     ctx.beginPath();
@@ -96,7 +96,7 @@ export const applyQuoteToImage = async (
 
     // Draw text
     ctx.fillStyle = fontColor;
-    let y = rectY * 1.12;
+    let y = (canvas.height - totalHeight) / 2;
     for (const paragraph of paragraphs) {
       const lines = paragraph.split("\n"); // Split each paragraph into lines
 
@@ -136,7 +136,7 @@ export const applyQuoteToImage = async (
         }
       }
 
-      y += paragraphHeight + fontSize * lineHeight * 0.5; // Add extra spacing between paragraphs
+      y += paragraphHeight + fontSize * lineHeight * 0.3; // Add extra spacing between paragraphs
     }
 
     // Save the image with the quote applied
