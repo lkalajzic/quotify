@@ -15,6 +15,8 @@ export default function Home() {
   const [fontSize, setFontSize] = useState(35);
   const [fontColor, setFontColor] = useState('#000');
   const [customizationChanges, setCustomizationChanges] = useState(false);
+  const [textWidth, setTextWidth] = useState(50); // Default to font size
+  const [rectangleColor, setRectangleColor] = useState('#ffffffcc'); // Default off white
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -90,29 +92,14 @@ export default function Home() {
     }
   };
 
-  const handleQuoteProcessing = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/get-quotes`, {
-        method: 'GET',
-      });
-      const data = await response.json();
-      if (!data.success) {
-        setErrorMessage(data.message);
-      } else {
-        setErrorMessage('');
-        fetchSubmittedData(); // Fetch updated submitted data
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while processing quotes.');
-    }
-  };
-
   const handleQuotePreview = async () => {
     try {
       const queryParams = new URLSearchParams({
         fontFamily: fontFamily,
         fontSize: fontSize,
         fontColor: fontColor,
+        textWidth: textWidth,
+        rectangleColor: rectangleColor,
       });
 
       const response = await fetch(
@@ -128,6 +115,34 @@ export default function Home() {
         setErrorMessage('');
         setResultImage(data.processedImagePath);
         setUploadInterface(false);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while processing quotes.');
+    }
+  };
+
+  const handleQuoteProcessing = async () => {
+    try {
+      const queryParams = new URLSearchParams({
+        fontFamily: fontFamily,
+        fontSize: fontSize,
+        fontColor: fontColor,
+        textWidth: textWidth,
+        rectangleColor: rectangleColor,
+      });
+
+      const response = await fetch(
+        `${backendUrl}/api/get-quotes?${queryParams}`,
+        {
+          method: 'GET',
+        },
+      );
+      const data = await response.json();
+      if (!data.success) {
+        setErrorMessage(data.message);
+      } else {
+        setErrorMessage('');
+        fetchSubmittedData(); // Fetch updated submitted data
       }
     } catch (error) {
       setErrorMessage('An error occurred while processing quotes.');
@@ -258,9 +273,8 @@ export default function Home() {
         </div>
       ) : (
         <div className="flex">
-          <button onClick={handleQuotePreview}>Continue</button>
-          <div className="w-1/2 p-4">
-            <h2>Customization</h2>
+          <div className="w-1/2 p-8 flex flex-col gap-4 font-semibold">
+            <h2 className="text-[30px] font-semibold">Customization</h2>
             <label htmlFor="fontFamily">Font Family:</label>
             <select
               id="fontFamily"
@@ -270,9 +284,7 @@ export default function Home() {
               <option value="Arial">Arial</option>
               <option value="serif">Serif</option>
               <option value="sans-serif">Sans-serif</option>
-              <option value="monospace">Monospace</option>
               <option value="cursive">Cursive</option>
-              <option value="fantasy">Fantasy</option>
             </select>
             <label htmlFor="fontSize">Font Size:</label>
             <input
@@ -281,6 +293,14 @@ export default function Home() {
               value={fontSize}
               onChange={(e) => setFontSize(parseInt(e.target.value))}
             />
+            <label htmlFor="textWidth">Text Width:</label>
+            <input
+              className="relative w-[300px] bg-primary-blue rounded-lg cursor-pointer"
+              type="number"
+              id="textWidth"
+              value={textWidth}
+              onChange={(e) => setTextWidth(parseInt(e.target.value))}
+            />
             <label htmlFor="fontColor">Font Color:</label>
             <input
               type="color"
@@ -288,12 +308,33 @@ export default function Home() {
               value={fontColor}
               onChange={(e) => setFontColor(e.target.value)}
             />
-            <button onClick={handleCustomizationUpdate}>Update Preview</button>
+            <label htmlFor="rectangleColor">Rectangle Color:</label>
+            <input
+              type="color"
+              id="rectangleColor"
+              value={rectangleColor}
+              onChange={(e) => setRectangleColor(e.target.value)}
+            />
+            <div className="flex gap-4 mt-6">
+              <button
+                className="rounded-md border border-dashed border-blue-600 px-[14px] py-[6px] w-[200px] text-gray-600 hover:shadow-lg"
+                onClick={handleCustomizationUpdate}
+              >
+                Update Preview
+              </button>
+              <button
+                className="rounded-md bg-blue-600 px-[14px] py-[6px] w-[200px] text-white hover:shadow-lg "
+                onClick={handleQuoteProcessing}
+              >
+                Generate And Download All Images
+              </button>
+            </div>
           </div>
 
-          <div>
+          <div className="flex items-center">
             {resultImage ? (
               <Image
+                className="shadow-xl"
                 src={`${backendUrl}/${resultImage}`}
                 width={400}
                 height={400}
@@ -303,14 +344,6 @@ export default function Home() {
               <p>N/A</p>
             )}
           </div>
-
-          <button
-            onClick={handleCustomizationUpdate}
-            className="border-2 border-gray-300 rounded-md p-2 m-2"
-            type="button"
-          >
-            Generate And Download All Images
-          </button>
         </div>
       )}
     </div>
