@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useDropzone } from 'react-dropzone';
 
 export default function Home() {
   const [quote, setQuote] = useState('');
@@ -12,7 +13,7 @@ export default function Home() {
   const [uploadInterface, setUploadInterface] = useState(true);
   const [fontFamily, setFontFamily] = useState('serif');
   const [fontSize, setFontSize] = useState(35);
-  const [fontColor, setFontColor] = useState('#232626');
+  const [fontColor, setFontColor] = useState('#000');
   const [customizationChanges, setCustomizationChanges] = useState(false);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -138,32 +139,70 @@ export default function Home() {
     handleQuotePreview(); // Trigger the preview update
   };
 
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: 'image/*',
+    onDrop: (acceptedFiles) => {
+      setImage(acceptedFiles);
+    },
+  });
+
   return (
-    <div className="flex">
+    <div>
       {uploadInterface ? (
         <div className="flex flex-col">
-          <div className="flex">
-            <div className="w-1/2 p-4">
+          <h1 className="pt-8 pl-8 text-[30px] font-semibold">
+            Generate quote images
+          </h1>
+          <div className="flex flex-col lg:flex-row w-full">
+            <div className="w-1/2 p-8  flex flex-col gap-4">
+              <div className="m-2 text-[20px] font-semibold">
+                Paste your quotes
+              </div>
               <form onSubmit={handleQuoteSubmit}>
                 <textarea
-                  className="w-[800px] h-[400px]"
+                  className="w-[628px] h-[128px] border border-[#D0D5DD] shadow-sm rounded-lg text-[15px]"
                   name="quote"
-                  placeholder="Enter your quote"
+                  placeholder="We make our fortunes and we call them fate. -Benjamin Disraeli. ;;; Named must your fear be before banish it you can. - Yoda"
                   value={quote}
                   onChange={(e) => setQuote(e.target.value)}
                 />
-                <button type="submit">Submit Quote</button>
+                <div className="text-blue-600 mt-4">
+                  Each quote should be separated by three semicolons (;;;).
+                </div>
+                <button
+                  className="rounded-md border border-dashed border-blue-600 px-[14px] py-[6px] text-gray-600 hover:shadow-lg mt-4"
+                  type="submit"
+                >
+                  Submit Quote
+                </button>
               </form>
 
-              <form onSubmit={handleImageSubmit} encType="multipart/form-data">
-                <input
-                  type="file"
-                  name="images"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => setImage(e.target.files)}
-                />
-                <button type="submit">Upload Images</button>
+              <div className="mt-8 text-[20px] font-semibold">
+                Upload your images
+              </div>
+              <form className="mt-4" onSubmit={handleImageSubmit}>
+                <div
+                  {...getRootProps()}
+                  className="text-sm cursor-pointer border-[1.2px] border-dashed border-blue-600 w-[628px] h-[128px] rounded-xl flex items-center justify-center"
+                >
+                  <input {...getInputProps()} />
+                  <div className="flex flex-col justify-center items-center gap-1">
+                    <Image src="/../public/upload.png" width={40} height={40} />
+                    <div>
+                      <span className="text-blue-600">Click to upload </span> or
+                      drag and drop images here
+                    </div>
+                    <div>SVG, PNG, JPG or JPEG</div>
+                  </div>
+                </div>
+                <div>
+                  <button
+                    className="rounded-md border border-dashed border-blue-600 px-[14px] py-[6px] text-gray-600 hover:shadow-lg mt-6"
+                    type="submit"
+                  >
+                    Upload Images
+                  </button>
+                </div>
               </form>
               {errorMessage && <p className="text-red-500">{errorMessage}</p>}
             </div>
@@ -171,12 +210,17 @@ export default function Home() {
             <div className="w-1/2 p-4">
               {submittedQuotes.length > 0 && (
                 <div>
-                  <h2>Your submitted quotes:</h2>
-                  <ul className="list-disc ml-6">
+                  <h2 className="m-2 text-[20px] font-semibold">
+                    Submitted quotes:
+                  </h2>
+                  <ul className="list-disc mx-2">
                     {submittedQuotes.map((quote, index) => (
-                      <li className="whitespace-pre-wrap" key={index}>
+                      <ul
+                        className="whitespace-pre-wrap border border-blue-600 mb-4 p-2 rounded-lg hover:shadow-lg"
+                        key={index}
+                      >
                         {quote}
-                      </li>
+                      </ul>
                     ))}
                   </ul>
                 </div>
@@ -184,8 +228,10 @@ export default function Home() {
 
               {submittedImages.length > 0 && (
                 <div>
-                  <h2>Submitted Images</h2>
-                  <div className="grid grid-cols-2 gap-4">
+                  <h2 className="m-2 text-[20px] font-semibold">
+                    Submitted Images
+                  </h2>
+                  <div className="grid grid-cols-5 gap-1 mx-2">
                     {submittedImages.map((imageUrl, index) => (
                       <Image
                         key={index}
@@ -201,8 +247,13 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex justify-center mt-4">
-            <button onClick={handleQuotePreview}>Continue</button>
+          <div className="flex justify-center m-8">
+            <button
+              className="rounded-md bg-blue-600 px-[60px] py-[14px] text-white hover:shadow-lg"
+              onClick={handleQuotePreview}
+            >
+              Continue
+            </button>
           </div>
         </div>
       ) : (

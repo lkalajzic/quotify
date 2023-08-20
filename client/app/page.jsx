@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 
 export default function Home() {
   return (
@@ -15,17 +16,23 @@ export default function Home() {
             quote images for free.
           </div>
           <div className="mt-6 flex items-center gap-6">
-            <button
-              className="rounded-md border border-r-[#D0D5DD] px-[32px] py-[10px] text-gray-600 hover:shadow-lg"
-              onClick={{}}
-            >
+            <button className="rounded-md border border-r-[#D0D5DD] px-[32px] py-[10px] text-gray-600 hover:shadow-lg">
               Demo
             </button>
-            <Link href="/sign-up">
-              <button className="rounded-md bg-blue-600 px-[18px] py-[10px] text-white hover:shadow-lg">
-                Try it now!
-              </button>
-            </Link>
+            <SignedIn>
+              <Link href="/submission">
+                <button className="rounded-md bg-blue-600 px-[18px] py-[10px] text-white hover:shadow-lg">
+                  Use it now!
+                </button>
+              </Link>
+            </SignedIn>
+            <SignedOut>
+              <Link href="/sign-up">
+                <button className="rounded-md bg-blue-600 px-[18px] py-[10px] text-white hover:shadow-lg">
+                  Try it now!
+                </button>
+              </Link>
+            </SignedOut>
           </div>
         </div>
         <div className="flex-1">

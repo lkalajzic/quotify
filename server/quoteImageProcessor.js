@@ -23,7 +23,7 @@ export const applyQuoteToImage = async (
     const maxRectWidth = canvas.width * 0.8;
     const lineHeight = 1.3; // Line height factor
     let newlineCount = 0;
-    if (/[\n\n]{2,}/.test(quote)) newlineCount++;
+    if (/[\r\n]{2,}/.test(quote)) newlineCount++;
     for (let i = 0; i < quote.length; i++) {
       if (quote[i] === "\n") {
         newlineCount++;
@@ -48,8 +48,11 @@ export const applyQuoteToImage = async (
     }
     wrappedLines.push(line);
 
+    console.log(wrappedLines);
+    console.log("newline", newlineCount);
     const totalHeight =
       (wrappedLines.length + newlineCount) * fontSize * lineHeight;
+    console.log(totalHeight);
 
     // Determine rectangle height and position
     const rectHeight = totalHeight + fontSize * 3;
@@ -57,9 +60,9 @@ export const applyQuoteToImage = async (
     const rectY = (canvas.height - rectHeight) / 2;
 
     // Draw rounded rectangle with semi-transparent fill
-    ctx.fillStyle = "rgba(255, 255, 255, 180)";
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-    ctx.lineWidth = 2;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+    ctx.lineWidth = 10;
     const radius = 30;
 
     ctx.beginPath();
