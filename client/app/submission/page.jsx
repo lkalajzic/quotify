@@ -273,10 +273,11 @@ export default function Home() {
         </div>
       ) : (
         <div className="flex">
-          <div className="w-1/2 p-8 flex flex-col gap-4 font-semibold">
+          <div className="w-1/2 m-12 flex flex-col gap-4 font-semibold">
             <h2 className="text-[30px] font-semibold">Customization</h2>
             <label htmlFor="fontFamily">Font Family:</label>
             <select
+              className="border-[3px] border-blue-600 border-dotted max-w-[100px]"
               id="fontFamily"
               value={fontFamily}
               onChange={(e) => setFontFamily(e.target.value)}
@@ -288,6 +289,7 @@ export default function Home() {
             </select>
             <label htmlFor="fontSize">Font Size:</label>
             <input
+              className="border-[3px] border-blue-600 border-dotted max-w-[100px]"
               type="number"
               id="fontSize"
               value={fontSize}
@@ -295,20 +297,27 @@ export default function Home() {
             />
             <label htmlFor="textWidth">Text Width:</label>
             <input
-              className="relative w-[300px] bg-primary-blue rounded-lg cursor-pointer"
+              className="border-[3px] border-blue-600 border-dotted max-w-[100px]"
               type="number"
               id="textWidth"
               value={textWidth}
               onChange={(e) => setTextWidth(parseInt(e.target.value))}
             />
-            <label htmlFor="fontColor">Font Color:</label>
+            <label className="underline underline-offset-3" htmlFor="fontColor">
+              Font Color:
+            </label>
             <input
               type="color"
               id="fontColor"
               value={fontColor}
               onChange={(e) => setFontColor(e.target.value)}
             />
-            <label htmlFor="rectangleColor">Rectangle Color:</label>
+            <label
+              className="underline underline-offset-3"
+              htmlFor="rectangleColor"
+            >
+              Rectangle Color:
+            </label>
             <input
               type="color"
               id="rectangleColor"
@@ -323,7 +332,7 @@ export default function Home() {
                 Update Preview
               </button>
               <button
-                className="rounded-md bg-blue-600 px-[14px] py-[6px] w-[200px] text-white hover:shadow-lg "
+                className="rounded-md bg-blue-600 px-[14px] py-[14px] w-[350px] text-white hover:shadow-lg "
                 onClick={handleQuoteProcessing}
               >
                 Generate And Download All Images
