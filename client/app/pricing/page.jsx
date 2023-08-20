@@ -97,11 +97,12 @@ export default function Home() {
               <div>Priority processing</div>
             </div>
           </div>
-          <Link href="sign-up">
-            <button className="rounded-md bg-blue-600 px-[48px] py-[10px] text-white  hover:shadow-lg mt-8">
-              Get started
-            </button>
-          </Link>
+          <a
+            href="/checkout"
+            className="rounded-md bg-blue-600 px-[48px] py-[10px] text-white  hover:shadow-lg mt-8 "
+          >
+            Get started
+          </a>
         </div>
       </div>
     </main>
