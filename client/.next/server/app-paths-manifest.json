@@ -1,3 +1,8 @@
 {
-  "/checkout/page": "app/checkout/page.js"
+  "/page": "app/page.js",
+  "/submission/page": "app/submission/page.js",
+  "/pricing/page": "app/pricing/page.js",
+  "/checkout/page": "app/checkout/page.js",
+  "/api/create-user/route": "app/api/create-user/route.js",
+  "/api/find-user/[email]/route": "app/api/find-user/[email]/route.js"
 }

@@ -29,3 +29,16 @@ export async function checkIfUserExists(email) {
     throw error;
   }
 }
+
+export async function getUser(email) {
+  try {
+    const user = await User.findOne({ email: email });
+    if (user) {
+      return user;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting user:', error);
+    throw error;
+  }
+}

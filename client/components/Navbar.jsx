@@ -29,6 +29,11 @@ const Navbar = () => {
           <Link href="/pricing">
             <p className="text-gray-600 hover:underline">Pricing</p>
           </Link>
+          <SignedIn>
+            <Link href="/submission">
+              <p className="text-gray-600 hover:underline">Submission</p>
+            </Link>
+          </SignedIn>
         </div>
         <div className="hidden items-center gap-4 sm:flex">
           <SignedOut>

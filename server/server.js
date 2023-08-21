@@ -156,13 +156,16 @@ app.get("/api/get-previews", async (req, res) => {
 app.get("/api/get-quotes", async (req, res) => {
   const { fontFamily, fontSize, fontColor, textWidth, rectangleColor } =
     req.query;
+  let generatedImagePaths = [];
+  let generatedImagePath;
+
   try {
     // Loop through each submitted quote
     for (let i = 0; i < quotes.length; i++) {
       const quote = quotes[i];
       const imagePath = images[i % images.length]; // Use modulo to cycle through images
 
-      await applyQuoteToImage(
+      generatedImagePath = await applyQuoteToImage(
         quote,
         imagePath,
         fontFamily,
@@ -171,6 +174,15 @@ app.get("/api/get-quotes", async (req, res) => {
         textWidth,
         rectangleColor
       );
+      generatedImagePaths.push(generatedImagePath);
+    }
+    if (generatedImagePaths) {
+      res.json({ success: true, generatedImagePaths });
+    } else {
+      res.json({
+        success: false,
+        message: "An error occurred while processing the images .",
+      });
     }
   } catch (error) {
     console.error("Error applying quotes to images:", error);

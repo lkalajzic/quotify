@@ -10,8 +10,8 @@ export default function Home() {
         </h1>
         <div>Simple, transparent pricing that grows with you.</div>
       </div>
-      <div className="flex m-8 justify-evenly">
-        <div className="flex flex-col w-[384px] h-[440px] gap-5 items-center shadow-md rounded-xl mt-8">
+      <div className="flex flex-row m-8 gap-20 justify-center">
+        <div className="flex flex-col w-[384px] h-[440px] gap-5 items-center shadow-xl rounded-xl mt-12">
           <Image
             className="mt-4"
             src="/free.png"
@@ -74,7 +74,7 @@ export default function Home() {
                 alt=""
                 className="items-left"
               />
-              <div>500 credits</div>
+              <div>Unlimited credits</div>
             </div>
             <div className="flex flex-row items-center gap-4 text-gray-600">
               <Image

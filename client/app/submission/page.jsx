@@ -1,9 +1,15 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
+import { useUser } from '@clerk/nextjs';
+
+import { getUser } from '@/utils/actions';
 
 export default function Home() {
+  const { user, isLoaded } = useUser();
+  const [userCredits, setUserCredits] = useState(undefined);
   const [quote, setQuote] = useState('');
   const [image, setImage] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -17,12 +23,42 @@ export default function Home() {
   const [customizationChanges, setCustomizationChanges] = useState(false);
   const [textWidth, setTextWidth] = useState(50); // Default to font size
   const [rectangleColor, setRectangleColor] = useState('#ffffffcc'); // Default off white
+  const [firstDownload, setfirstDownload] = useState(true);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
+    if (isLoaded) {
+      getLocalUserInfo();
+    }
     fetchSubmittedData();
-  }, []);
+  }, [isLoaded]);
+
+  const getLocalUserInfo = async () => {
+    const response = await fetch(
+      `/api/find-user/${user.emailAddresses[0].emailAddress}`,
+    );
+    const userInfo = await response.json();
+
+    if (!userInfo) {
+      if (!localStorage.getItem('quotify_user')) {
+        localStorage.setItem(
+          'quotify_user',
+          JSON.stringify({
+            credits: 30,
+          }),
+        );
+      }
+      setUserCredits(JSON.parse(localStorage.getItem('quotify_user')).credits);
+    } else {
+      localStorage.setItem(
+        'quotify_user',
+        JSON.stringify({
+          credits: -1,
+        }),
+      );
+    }
+  };
 
   const fetchSubmittedData = () => {
     fetch(`${backendUrl}/api/submitted-data`)
@@ -122,6 +158,21 @@ export default function Home() {
   };
 
   const handleQuoteProcessing = async () => {
+    if (userCredits === 0) {
+      alert('Insufficient credits! Please buy a premium plan.');
+      return;
+    }
+
+    if (userCredits !== -1) {
+      setUserCredits(userCredits - submittedQuotes.length);
+      localStorage.setItem(
+        'quotify_user',
+        JSON.stringify({
+          credits: userCredits - submittedQuotes.length,
+        }),
+      );
+    }
+
     try {
       const queryParams = new URLSearchParams({
         fontFamily: fontFamily,
@@ -138,6 +189,12 @@ export default function Home() {
         },
       );
       const data = await response.json();
+      console.log('data', data.generatedImagePaths);
+
+      for (let i = 0; i < data.generatedImagePaths.length; i++) {
+        await download(`${backendUrl}/${data.generatedImagePaths[i]}`);
+      }
+
       if (!data.success) {
         setErrorMessage(data.message);
       } else {
@@ -151,7 +208,8 @@ export default function Home() {
 
   const handleCustomizationUpdate = () => {
     setCustomizationChanges(true);
-    handleQuotePreview(); // Trigger the preview update
+    new Promise((resolve) => setTimeout(resolve, 3000)); // 3 sec
+    handleQuotePreview(true); // Trigger the preview update
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -160,6 +218,24 @@ export default function Home() {
       setImage(acceptedFiles);
     },
   });
+
+  async function toDataURL(url) {
+    const blob = await fetch(url).then((res) => res.blob());
+    return URL.createObjectURL(blob);
+  }
+
+  async function download(url) {
+    if (firstDownload) {
+      setfirstDownload(false);
+      await new Promise((resolve) => setTimeout(resolve, 3000)); // 3 sec
+    }
+    const a = document.createElement('a');
+    a.href = await toDataURL(url);
+    a.download = 'myImage.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 
   return (
     <div>

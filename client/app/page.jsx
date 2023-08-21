@@ -12,7 +12,7 @@ export default function Home() {
             <span className="text-blue-600">Images</span> into Posts in Seconds
           </h1>
           <div className="text-gray-600">
-            Transform your favorite quotes into captivating visuals. Create 50
+            Transform your favorite quotes into captivating visuals. Create 30
             quote images for free.
           </div>
           <div className="mt-6 flex items-center gap-6">
