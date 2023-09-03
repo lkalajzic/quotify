@@ -557,8 +557,20 @@ video {
   --tw-backdrop-saturate:  ;
   --tw-backdrop-sepia:  ;
 }
+.absolute {
+  position: absolute;
+}
 .relative {
   position: relative;
+}
+.left-7 {
+  left: 1.75rem;
+}
+.right-7 {
+  right: 1.75rem;
+}
+.top-4 {
+  top: 1rem;
 }
 .m-12 {
   margin: 3rem;
@@ -638,6 +650,9 @@ video {
 .h-screen {
   height: 100vh;
 }
+.min-h-screen {
+  min-height: 100vh;
+}
 .w-1\/2 {
   width: 50%;
 }
@@ -683,6 +698,9 @@ video {
 .flex-col {
   flex-direction: column;
 }
+.flex-wrap {
+  flex-wrap: wrap;
+}
 .items-start {
   align-items: flex-start;
 }
@@ -715,6 +733,13 @@ video {
 }
 .gap-8 {
   gap: 2rem;
+}
+.gap-x-6 {
+  -moz-column-gap: 1.5rem;
+       column-gap: 1.5rem;
+}
+.gap-y-10 {
+  row-gap: 2.5rem;
 }
 .whitespace-pre-wrap {
   white-space: pre-wrap;
@@ -763,6 +788,17 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(0 91 245 / var(--tw-bg-opacity));
 }
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+.p-1 {
+  padding: 0.25rem;
+}
 .p-2 {
   padding: 0.5rem;
 }
@@ -771,6 +807,10 @@ video {
 }
 .p-8 {
   padding: 2rem;
+}
+.px-10 {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
 }
 .px-\[14px\] {
   padding-left: 14px;
@@ -792,6 +832,10 @@ video {
   padding-left: 60px;
   padding-right: 60px;
 }
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
 .py-\[10px\] {
   padding-top: 10px;
   padding-bottom: 10px;
@@ -809,6 +853,9 @@ video {
 }
 .pt-8 {
   padding-top: 2rem;
+}
+.align-middle {
+  vertical-align: middle;
 }
 .text-\[14px\] {
   font-size: 14px;

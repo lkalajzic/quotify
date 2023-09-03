@@ -30,8 +30,8 @@ export default function Home() {
   useEffect(() => {
     if (isLoaded) {
       getLocalUserInfo();
+      fetchSubmittedData();
     }
-    fetchSubmittedData();
   }, [isLoaded]);
 
   const getLocalUserInfo = async () => {
@@ -63,7 +63,7 @@ export default function Home() {
   const fetchSubmittedData = () => {
     fetch(`${backendUrl}/api/submitted-data`)
       .then((response) => response.json())
-      .then((data) => {
+      .then(async (data) => {
         if (data.success) {
           setSubmittedQuotes(data.quotes);
           setSubmittedImages(
@@ -189,6 +189,12 @@ export default function Home() {
         },
       );
       const data = await response.json();
+      await fetch(`/api/find-user/${user.emailAddresses[0].emailAddress}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          imagePath: data.generatedImagePaths,
+        }),
+      });
       console.log('data', data.generatedImagePaths);
 
       for (let i = 0; i < data.generatedImagePaths.length; i++) {
